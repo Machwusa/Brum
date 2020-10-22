@@ -3,4 +3,5 @@
     <string name="save">Save</string>
     <string name="barcode">Barcode</string>
     <string name="device_name">Device Name</string>
+    <string name="scan_barcode">Scan Barcode</string>
 </resources>
