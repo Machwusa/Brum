@@ -78,6 +78,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        binding.etDeviceName.setText(getPref(PREF_DEVICE_NAME));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        updatePreference(PREF_DEVICE_NAME,binding.etDeviceName.getText().toString().trim());
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         updatePreference(PREF_DEVICE_NAME, "");

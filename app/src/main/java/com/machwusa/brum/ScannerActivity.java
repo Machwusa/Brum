@@ -43,7 +43,6 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("barcode", rawResult.getText());
         startActivity(intent);
-
         // If you would like to resume scanning, call this method below:
        // mScannerView.resumeCameraPreview(this);
         
