@@ -42,7 +42,6 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
         // Send barcode to MainActivity
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("barcode", rawResult.getText());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
 
         // If you would like to resume scanning, call this method below:
