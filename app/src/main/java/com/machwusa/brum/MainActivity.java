@@ -1,11 +1,16 @@
 package com.machwusa.brum;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -22,7 +27,9 @@ import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
-    private static String PREF_DEVICE_NAME = "device_name";
+    private static final String PREF_DEVICE_NAME = "device_name";
+    private static final int CAMERA_PERMISSION_CODE = 100;
+    private static final int STORAGE_PERMISSION_CODE = 101;
 
     private ActivityMainBinding binding;
     private FileUtil fu;
@@ -40,26 +47,47 @@ public class MainActivity extends AppCompatActivity {
 
 
         binding.btnScan.setOnClickListener(view12 -> {
-            updatePreference(PREF_DEVICE_NAME,binding.etDeviceName.getText().toString().trim());
-            Intent intent = new Intent(getApplicationContext(), ScannerActivity.class);
-            startActivity(intent);
+            if (isPermissionGranted(Manifest.permission.CAMERA)){
+                openScanner();
+            }else {
+                requestPermission(Manifest.permission.CAMERA,
+                        CAMERA_PERMISSION_CODE);
+            }
+
         });
 
 
         binding.btnSave.setOnClickListener(view1 -> {
 
-            if (validate()){
-                String data = binding.etDeviceName.getText().toString().trim() + " " +  binding.etBarcode.getText().toString().trim();
-
-                fu.writeToFile(data);
-
-                binding.etDeviceName.setText("");
-                binding.etBarcode.setText("");
-                updatePreference(PREF_DEVICE_NAME, "");
+            if (isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                    saveData();
+            }else {
+                requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        STORAGE_PERMISSION_CODE);
             }
 
 
+
+
         });
+    }
+
+    private void openScanner(){
+        updatePreference(PREF_DEVICE_NAME,binding.etDeviceName.getText().toString().trim());
+        Intent intent = new Intent(getApplicationContext(), ScannerActivity.class);
+        startActivity(intent);
+    }
+
+    private void saveData(){
+        if (validate()){
+        String data = binding.etDeviceName.getText().toString().trim() + " " +  binding.etBarcode.getText().toString().trim();
+
+        fu.writeToFile(data);
+
+        binding.etDeviceName.setText("");
+        binding.etBarcode.setText("");
+        updatePreference(PREF_DEVICE_NAME, "");
+        }
     }
 
 
@@ -131,6 +159,56 @@ public class MainActivity extends AppCompatActivity {
         return sharedPreferences.getString(key, "");
     }
 
+    public boolean isPermissionGranted(String permission) {
+        return ContextCompat.checkSelfPermission(MainActivity.this, permission)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    // Function to check and request permission.
+    public void requestPermission(String permission, int requestCode) {
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[] { permission },
+                requestCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainActivity.this,
+                        "Camera Permission Granted",
+                        Toast.LENGTH_SHORT)
+                        .show();
+                openScanner();
+            }
+            else {
+                Toast.makeText(MainActivity.this,
+                        "Camera Permission Denied",
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+        else if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainActivity.this,
+                        "Storage Permission Granted",
+                        Toast.LENGTH_SHORT)
+                        .show();
+                saveData();
+            }
+            else {
+                Toast.makeText(MainActivity.this,
+                        "Storage Permission Denied",
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+    }
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -138,5 +216,7 @@ public class MainActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
+
+
 }
 
