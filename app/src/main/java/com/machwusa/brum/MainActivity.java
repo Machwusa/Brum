@@ -73,21 +73,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openScanner(){
-        updatePreference(PREF_DEVICE_NAME,binding.etDeviceName.getText().toString().trim());
-        Intent intent = new Intent(getApplicationContext(), ScannerActivity.class);
-        startActivity(intent);
+        if (isPermissionGranted(Manifest.permission.CAMERA)){
+            updatePreference(PREF_DEVICE_NAME,binding.etDeviceName.getText().toString().trim());
+            Intent intent = new Intent(getApplicationContext(), ScannerActivity.class);
+            startActivity(intent);
+        }else {
+            requestPermission(Manifest.permission.CAMERA,
+                    CAMERA_PERMISSION_CODE);
+        }
+
     }
 
     private void saveData(){
-        if (validate()){
-        String data = binding.etDeviceName.getText().toString().trim() + " " +  binding.etBarcode.getText().toString().trim();
+        if (isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            if (validate()){
+                String data = binding.etDeviceName.getText().toString().trim() + " " +  binding.etBarcode.getText().toString().trim();
 
-        fu.writeToFile(data);
+                fu.writeToFile(data);
 
-        binding.etDeviceName.setText("");
-        binding.etBarcode.setText("");
-        updatePreference(PREF_DEVICE_NAME, "");
+                binding.etDeviceName.setText("");
+                binding.etBarcode.setText("");
+                updatePreference(PREF_DEVICE_NAME, "");
+            }
+        }else {
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    STORAGE_PERMISSION_CODE);
         }
+
     }
 
 
