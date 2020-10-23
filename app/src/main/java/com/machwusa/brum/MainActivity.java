@@ -47,28 +47,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         binding.btnScan.setOnClickListener(view12 -> {
-            if (isPermissionGranted(Manifest.permission.CAMERA)){
-                openScanner();
-            }else {
-                requestPermission(Manifest.permission.CAMERA,
-                        CAMERA_PERMISSION_CODE);
-            }
-
+            openScanner();
         });
 
 
         binding.btnSave.setOnClickListener(view1 -> {
-
-            if (isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                    saveData();
-            }else {
-                requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        STORAGE_PERMISSION_CODE);
-            }
-
-
-
-
+            saveData();
         });
     }
 
