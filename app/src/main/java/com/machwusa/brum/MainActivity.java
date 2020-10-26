@@ -126,14 +126,14 @@ public class MainActivity extends AppCompatActivity {
         final String barcode = binding.etBarcode.getText().toString().trim();
 
         if (deviceName.isEmpty()) {
-            binding.etDeviceName.setError("Enter device name");
+            binding.etDeviceName.setError("Device name");
             valid = false;
         } else {
             binding.etDeviceName.setError(null);
         }
 
         if (barcode.isEmpty()) {
-            binding.etBarcode.setError("Enter barcode");
+            binding.etBarcode.setError("Barcode");
             valid = false;
         } else {
             binding.etBarcode.setError(null);
